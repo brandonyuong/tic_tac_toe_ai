@@ -4,6 +4,7 @@ This is a simple Tic Tac Toe game which runs from the command line.
 
 ### Requirements
 + Python 3.6.4
++ Git Version Control (if you want to evaluate changes)
 
 ### Python Packages
 + random
