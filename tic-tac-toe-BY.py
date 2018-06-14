@@ -25,6 +25,17 @@ def inputPlayerLetter():
         return ['O', 'X']
 
 
+def selectCPU():
+    selection = ''
+    while not (selection =='bit' or selection =='byte'):
+        print('Play vs. Bit or Byte? (Bit = Unbeatable AI; Byte = Machine Learning AI)?')
+        selection = input().lower()
+    if selection == 'bit':
+        return 'bit'
+    else:
+        return 'byte'
+
+
 def coinFlipForFirst():
     if random.randint(0, 1) == 0:
         return 'computer'
@@ -94,7 +105,7 @@ def chooseRandomMoveFromList(board, movesList):
         return None
 
 
-def getComputerMove(board, computerLetter):
+def getBitMove(board, computerLetter):
     # Given a board and the computer's letter, determine where to move and return that move.
 
     if computerLetter == 'X':
@@ -149,6 +160,7 @@ def isBoardFull(board):
 # Start new game
 print('Welcome to Tic Tac Toe!')
 playerLetter, computerLetter = inputPlayerLetter()
+bitOrByte = selectCPU()
 
 
 while True:
@@ -182,19 +194,23 @@ while True:
         else:
             # Computer’s turn.
 
-            move = getComputerMove(theBoard, computerLetter)
-            makeMove(theBoard, computerLetter, move)
-            if isWinner(theBoard, computerLetter):
-                printBoard(theBoard)
-                print('The computer has beaten you! You lose.')
-                gameIsPlaying = False
-            else:
-                if isBoardFull(theBoard):
+            if bitOrByte == 'bit':
+                move = getBitMove(theBoard, computerLetter)
+                makeMove(theBoard, computerLetter, move)
+                if isWinner(theBoard, computerLetter):
                     printBoard(theBoard)
-                    print('The game is a tie!')
-                    break
+                    print('The computer has beaten you! You lose.')
+                    gameIsPlaying = False
                 else:
-                    turn = 'player'
+                    if isBoardFull(theBoard):
+                        printBoard(theBoard)
+                        print('The game is a tie!')
+                        break
+                    else:
+                        turn = 'player'
+
+            if bitOrByte == 'byte':
+                pass
 
     if not restart():
         # Restart the board or not
