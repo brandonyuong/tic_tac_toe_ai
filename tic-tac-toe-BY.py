@@ -2,13 +2,13 @@ import random
 
 
 def printBoard(board):
-    # 'board' is a string list that represents the board (ignoring index 0)
+    # 'board' is a string list that represents the board
     print( '\n -----------')
-    print( '| ' + board[7] + ' | ' + board[8] + ' | ' + board[9] + ' |')
+    print( '| ' + board[6] + ' | ' + board[7] + ' | ' + board[8] + ' |')
     print( ' -----------')
-    print( '| ' + board[4] + ' | ' + board[5] + ' | ' + board[6] + ' |')
+    print( '| ' + board[3] + ' | ' + board[4] + ' | ' + board[5] + ' |')
     print( ' -----------')
-    print( '| ' + board[1] + ' | ' + board[2] + ' | ' + board[3] + ' |')
+    print( '| ' + board[0] + ' | ' + board[1] + ' | ' + board[2] + ' |')
     print( ' -----------\n')
 
 
@@ -48,21 +48,17 @@ def restart():
     return input().lower().startswith('y')
 
 
-def makeMove(board, letter, move):
-    board[move] = letter
-
-
 def isWinner(position, occupant):
     # Given a board and a player’s letter, this function returns True if that player has won.
 
-    return ((position[7] == occupant and position[8] == occupant and position[9] == occupant) or  # top row
-            (position[4] == occupant and position[5] == occupant and position[6] == occupant) or  # middle row
-            (position[1] == occupant and position[2] == occupant and position[3] == occupant) or  # bottom row
-            (position[7] == occupant and position[4] == occupant and position[1] == occupant) or  # left column
-            (position[8] == occupant and position[5] == occupant and position[2] == occupant) or  # middle column
-            (position[9] == occupant and position[6] == occupant and position[3] == occupant) or  # right column
-            (position[7] == occupant and position[5] == occupant and position[3] == occupant) or  # diagonal
-            (position[9] == occupant and position[5] == occupant and position[1] == occupant))    # other diagonal
+    return ((position[6] == occupant and position[7] == occupant and position[8] == occupant) or  # top row
+            (position[3] == occupant and position[4] == occupant and position[5] == occupant) or  # middle row
+            (position[0] == occupant and position[1] == occupant and position[2] == occupant) or  # bottom row
+            (position[6] == occupant and position[3] == occupant and position[0] == occupant) or  # left column
+            (position[7] == occupant and position[4] == occupant and position[1] == occupant) or  # middle column
+            (position[8] == occupant and position[5] == occupant and position[2] == occupant) or  # right column
+            (position[6] == occupant and position[4] == occupant and position[2] == occupant) or  # diagonal
+            (position[8] == occupant and position[4] == occupant and position[0] == occupant))    # other diagonal
 
 
 def dupeBoard(board):
@@ -74,33 +70,37 @@ def dupeBoard(board):
     return duplicateBoard
 
 
-def isSpaceOpen(board, move):
-    # Return true if the passed move is free on the passed board.
+def makeMove(board, letter, key):
+    board[key - 1] = letter
 
-    return board[move] == ' '
+
+def isMoveOpen(board, key):
+    # Return true if the passed key is free on the passed board.
+
+    return board[key - 1] == ' '
 
 
 def getPlayerMove(board):
     # Let the player type in their move.
 
-    move = ' '
-    while move not in '1 2 3 4 5 6 7 8 9'.split() or not isSpaceOpen(board, int(move)):
+    key = ' '
+    while key not in '1 2 3 4 5 6 7 8 9'.split() or not isMoveOpen(board, int(key)):
         print('What is your next move? (Use numpad 1-9)')
-        move = input()
-    return int(move)
+        key = input()
+    return int(key)
 
 
-def chooseRandomMoveFromList(board, movesList):
+def chooseRandomMoveFromList(board, indexList):
     # Returns a valid move from the passed list on the passed board.
     # Returns None if there is no valid move.
 
-    possibleMoves = []
-    for i in movesList:
-        if isSpaceOpen(board, i):
-            possibleMoves.append(i)
+    possibleKeys = []
+    for i in indexList:
+        if isMoveOpen(board, i + 1):
+            possibleKeys.append(i + 1)
 
-    if len(possibleMoves) != 0:
-        return random.choice(possibleMoves)
+    if len(possibleKeys) != 0:
+        return random.choice(possibleKeys)
     else:
         return None
 
@@ -116,43 +116,43 @@ def getBitMove(board, computerLetter):
     # Here is our algorithm for our Tic Tac Toe AI:
     # First, check if we can win in the next move
 
-    for i in range(1, 10):
+    for k in range(1, 10):
         copy = dupeBoard(board)
-        if isSpaceOpen(copy, i):
-             makeMove(copy, computerLetter, i)
+        if isMoveOpen(copy, k):
+             makeMove(copy, computerLetter, k)
              if isWinner(copy, computerLetter):
-                 return i
+                 return k
 
     # Check if the player could win on their next move, and block them.
 
-    for i in range(1, 10):
+    for k in range(1, 10):
         copy = dupeBoard(board)
-        if isSpaceOpen(copy, i):
-            makeMove(copy, playerLetter, i)
+        if isMoveOpen(copy, k):
+            makeMove(copy, playerLetter, k)
             if isWinner(copy, playerLetter):
-                return i
-
-    # Try to take one of the corners, if they are free.
-
-    move = chooseRandomMoveFromList(board, [1, 3, 7, 9])
-    if move != None:
-        return move
+                return k
 
     # Try to take the center, if it is free.
 
-    if isSpaceOpen(board, 5):
+    if isMoveOpen(board, 5):
         return 5
+
+    # Try to take one of the corners, if they are free.
+
+    move = chooseRandomMoveFromList(board, [0, 2, 6, 8])
+    if move != None:
+        return move
 
     # Move on one of the sides.
 
-    return chooseRandomMoveFromList(board, [2, 4, 6, 8])
+    return chooseRandomMoveFromList(board, [1, 3, 5, 7])
 
 
 def isBoardFull(board):
     # Return True if every space on the board has been taken. Otherwise return False.
 
-    for i in range(1, 10):
-        if isSpaceOpen(board, i):
+    for k in range(1, 10):
+        if isMoveOpen(board, k):
             return False
     return True
 
@@ -166,7 +166,7 @@ bitOrByte = selectCPU()
 while True:
 # Initiate infinite Restart loop until broken
 
-    theBoard = [' '] * 10
+    theBoard = [' '] * 9
     turn = coinFlipForFirst()
     print('The ' + turn + ' will go first.')
     gameIsPlaying = True
@@ -177,8 +177,8 @@ while True:
             # Player’s turn.
 
             printBoard(theBoard)
-            move = getPlayerMove(theBoard)
-            makeMove(theBoard, playerLetter, move)
+            key = getPlayerMove(theBoard)
+            makeMove(theBoard, playerLetter, key)
             if isWinner(theBoard, playerLetter):
                 printBoard(theBoard)
                 print('Hooray! You have won the game!')
@@ -195,8 +195,8 @@ while True:
             # Computer’s turn.
 
             if bitOrByte == 'bit':
-                move = getBitMove(theBoard, computerLetter)
-                makeMove(theBoard, computerLetter, move)
+                key = getBitMove(theBoard, computerLetter)
+                makeMove(theBoard, computerLetter, key)
                 if isWinner(theBoard, computerLetter):
                     printBoard(theBoard)
                     print('The computer has beaten you! You lose.')
