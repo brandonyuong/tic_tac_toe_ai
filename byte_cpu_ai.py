@@ -16,7 +16,7 @@ class SaveStates:
     def __init__(self, first):
         self.statesBoard = []
         self.currentBoard = [' '] * 9
-        self.table = 'ann_ttt'  # Name of PostgreSQL table
+        self.table = 'ann_ttt_2'  # Name of PostgreSQL table
 
 
         # Track who played first
@@ -128,7 +128,10 @@ class SaveStates:
             if isMoveOpen(self.currentBoard, x + 1):
                 listOpenIndices.append(x)
 
-        best = 0
+        #Print for Testing# print('Open Spaces: {}'.format(listOpenIndices))
+        #Print for Testing# print('Board image: {}'.format(self.currentBoard))
+
+        best = -1
         dictAfterstates = {}  # Pairs of P-values and possible moves. Call move with the P-value.
 
         # Find P-value for each possible move from database.  Choose the best move.
@@ -144,5 +147,7 @@ class SaveStates:
                 dictAfterstates['0.5'] = y + 1
                 if best < 0.5:
                     best = 0.5
+
+        #Print for Testing# print('Best P-value = {}, Best move: {}, P-values: Moves = {}'.format(best, dictAfterstates[str(best)], dictAfterstates))
 
         return dictAfterstates[str(best)]
