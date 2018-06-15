@@ -43,22 +43,18 @@ def coinFlipForFirst():
         return 'player'
 
 
-def restart():
-    print('Do you want to play again? (yes or no)')
-    return input().lower().startswith('y')
-
-
-def isWinner(position, occupant):
-    # Given a board and a player’s letter, this function returns True if that player has won.
-
-    return ((position[6] == occupant and position[7] == occupant and position[8] == occupant) or  # top row
-            (position[3] == occupant and position[4] == occupant and position[5] == occupant) or  # middle row
-            (position[0] == occupant and position[1] == occupant and position[2] == occupant) or  # bottom row
-            (position[6] == occupant and position[3] == occupant and position[0] == occupant) or  # left column
-            (position[7] == occupant and position[4] == occupant and position[1] == occupant) or  # middle column
-            (position[8] == occupant and position[5] == occupant and position[2] == occupant) or  # right column
-            (position[6] == occupant and position[4] == occupant and position[2] == occupant) or  # diagonal
-            (position[8] == occupant and position[4] == occupant and position[0] == occupant))    # other diagonal
+def getTrainCount():
+    print("How many games to train? Enter 1 or more: ")
+    counter = input()
+    while True:
+        try:
+            counter = int(counter)
+            if counter > 0:
+                break
+        except:
+            print("Entered: {}. Must enter positive integer!".format(counter))
+            counter = input()
+    return counter
 
 
 def makeMove(board, letter, key):
@@ -81,6 +77,19 @@ def getPlayerMove(board):
     return int(key)
 
 
+def isWinner(position, occupant):
+    # Given a board and a player’s letter, this function returns True if that player has won.
+
+    return ((position[6] == occupant and position[7] == occupant and position[8] == occupant) or  # top row
+            (position[3] == occupant and position[4] == occupant and position[5] == occupant) or  # middle row
+            (position[0] == occupant and position[1] == occupant and position[2] == occupant) or  # bottom row
+            (position[6] == occupant and position[3] == occupant and position[0] == occupant) or  # left column
+            (position[7] == occupant and position[4] == occupant and position[1] == occupant) or  # middle column
+            (position[8] == occupant and position[5] == occupant and position[2] == occupant) or  # right column
+            (position[6] == occupant and position[4] == occupant and position[2] == occupant) or  # diagonal
+            (position[8] == occupant and position[4] == occupant and position[0] == occupant))    # other diagonal
+
+
 def isBoardFull(board):
     # Return True if every space on the board has been taken. Otherwise return False.
 
@@ -88,3 +97,8 @@ def isBoardFull(board):
         if isMoveOpen(board, k):
             return False
     return True
+
+
+def restart():
+    print('Do you want to play again? (yes or no)')
+    return input().lower().startswith('y')
