@@ -1,4 +1,7 @@
 from database import CursorFromConnectionFromPool
+from tictactoe_utils import isMoveOpen
+from bit_cpu_ai import dupeBoard
+import random
 
 
 """
@@ -13,8 +16,10 @@ class SaveStates:
     def __init__(self, first):
         self.statesBoard = []
         self.currentBoard = [' '] * 9
+        self.table = 'ann_ttt'  # Name of PostgreSQL table
 
 
+        # Track who played first
         if first == 'player':
             self.player = 'A'
             self.cpu = 'B'
@@ -33,40 +38,43 @@ class SaveStates:
         else:
             agent = self.cpu
         self.currentBoard[moveKey - 1] = agent
-        image = []
-        for i in self.currentBoard:
-            image.append(i)
+        image = dupeBoard(self.currentBoard)
         self.statesBoard.append(image)
 
 
     def retrieveState(self, gameState):
-        # Returns data from database as list [id, savestate, pvalue]
+        # Returns data from database as list
         with CursorFromConnectionFromPool() as cursor:
-            cursor.execute('SELECT * FROM ann_ttt WHERE savestate=%s', (gameState,))  # Cursor stores data
+            cursor.execute('SELECT * FROM {} WHERE savestate=%s'.format(self.table), (gameState,))  # Cursor stores data
             retrievedData = cursor.fetchone()  # fetchone is first row
-            # id=retrievedData[0], savestate=retrievedData[1], pvalue=retrievedData[2]
-            return retrievedData
+            # id: retrievedData[0], savestate: retrievedData[1], pvalue: retrievedData[2]
+            if retrievedData:
+                return [retrievedData[0], retrievedData[1], retrievedData[2]]
 
 
     def recordState(self, winnerCounter):
-        # Reward winning state by assigning 1 to its P-value
         loserCounter = winnerCounter -1
-        with CursorFromConnectionFromPool() as cursor:
-            cursor.execute(
-                'INSERT INTO ann_ttt (savestate, pvalue) VALUES (%s, %s)',
-                (self.statesBoard[winnerCounter], 1))
+        alpha = 0.1  # learning rate
+
+        # Reward winning state by assigning 1 to its P-value
+        retrieveWinState = self.retrieveState(self.statesBoard[winnerCounter])
+        if not retrieveWinState:
+            with CursorFromConnectionFromPool() as cursor:
+                cursor.execute(
+                    'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),
+                    (self.statesBoard[winnerCounter], 1))
         afterstate_pvalue = 1
         winnerCounter = winnerCounter - 2
+
         # Reward states leading to winning state with small increase to P-value
         while winnerCounter >= 0:
-            alpha = 0.1  # learning rate
             retrieved = self.retrieveState(self.statesBoard[winnerCounter])
             if retrieved:
                 recorded_pvalue = retrieved[2]
                 new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
-                        'UPDATE ann_ttt SET pvalue=%s WHERE savestate=%s',
+                        'UPDATE {} SET pvalue=%s WHERE savestate=%s'.format(self.table),
                         (new_pvalue, self.statesBoard[winnerCounter]))
                 afterstate_pvalue = new_pvalue
                 winnerCounter -= 2
@@ -75,28 +83,30 @@ class SaveStates:
                 new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
-                        'INSERT INTO ann_ttt (savestate, pvalue) VALUES (%s, %s)',
+                        'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),
                         (self.statesBoard[winnerCounter], new_pvalue))
                 afterstate_pvalue = new_pvalue
                 winnerCounter -= 2
 
         # Punish losing state by assigning 0 to its P-value
-        with CursorFromConnectionFromPool() as cursor:
-            cursor.execute(
-                'INSERT INTO ann_ttt (savestate, pvalue) VALUES (%s, %s)',
-                (self.statesBoard[loserCounter], 0))
+        retrieveLossState = self.retrieveState(self.statesBoard[loserCounter])
+        if not retrieveLossState:
+            with CursorFromConnectionFromPool() as cursor:
+                cursor.execute(
+                    'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),
+                    (self.statesBoard[loserCounter], 0))
         afterstate_pvalue = 0
         loserCounter = loserCounter - 2
+
         # Punish states leading to losing state with small decrease to P-value
         while loserCounter >= 0:
-            alpha = 0.1 # learning rate
             retrieved = self.retrieveState(self.statesBoard[loserCounter])
             if retrieved:
                 recorded_pvalue = retrieved[2]
                 new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
-                        'UPDATE ann_ttt SET pvalue=%s WHERE savestate=%s',
+                        'UPDATE {} SET pvalue=%s WHERE savestate=%s'.format(self.table),
                         (new_pvalue, self.statesBoard[loserCounter]))
                 afterstate_pvalue = new_pvalue
                 loserCounter -= 2
@@ -105,10 +115,34 @@ class SaveStates:
                 new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
-                        'INSERT INTO ann_ttt (savestate, pvalue) VALUES (%s, %s)',
+                        'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),
                         (self.statesBoard[loserCounter], new_pvalue))
                 afterstate_pvalue = new_pvalue
                 loserCounter -= 2
 
     def getByteMove(self):
-        pass
+        # Given the current board and the computer's letter, determine where to move and return that move.
+
+        listOpenIndices = []
+        for x in range(0, 9):
+            if isMoveOpen(self.currentBoard, x + 1):
+                listOpenIndices.append(x)
+
+        best = 0
+        dictAfterstates = {}  # Pairs of P-values and possible moves. Call move with the P-value.
+
+        # Find P-value for each possible move from database.  Choose the best move.
+        for y in listOpenIndices:
+            copy = dupeBoard(self.currentBoard)
+            copy[y] = self.cpu
+            retrieved = self.retrieveState(copy)
+            if retrieved:
+                dictAfterstates[str(retrieved[2])] = y + 1
+                if retrieved[2] > best:
+                    best = retrieved[2]
+            else:
+                dictAfterstates['0.5'] = y + 1
+                if best < 0.5:
+                    best = 0.5
+
+        return dictAfterstates[str(best)]

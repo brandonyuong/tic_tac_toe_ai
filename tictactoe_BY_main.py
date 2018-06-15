@@ -61,7 +61,7 @@ while True:
 
                 if isWinner(theBoard, computerLetter):
                     printBoard(theBoard)
-                    print('The computer has beaten you! You lose.')
+                    print('Bit has beaten you! You lose.')
                     gameSave.recordState(numberTurns)
                     gameIsPlaying = False
                 else:
@@ -73,7 +73,23 @@ while True:
                         turn = 'player'
 
             if bitOrByte == 'byte':
-                pass
+                key = gameSave.getByteMove()
+                makeMove(theBoard, computerLetter, key)
+                gameSave.addState(turn, key)
+                numberTurns += 1
+
+                if isWinner(theBoard, computerLetter):
+                    printBoard(theBoard)
+                    print('Byte has beaten you! You lose.')
+                    gameSave.recordState(numberTurns)
+                    gameIsPlaying = False
+                else:
+                    if isBoardFull(theBoard):
+                        printBoard(theBoard)
+                        print('The game is a tie!')
+                        break
+                    else:
+                        turn = 'player'
 
     if not restart():
         # Restart the board or not
