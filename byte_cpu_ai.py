@@ -1,7 +1,6 @@
 from database import CursorFromConnectionFromPool
 from tictactoe_utils import isMoveOpen
 from bit_cpu_ai import dupeBoard
-import random
 
 
 """
