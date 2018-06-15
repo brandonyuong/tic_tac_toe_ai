@@ -25,7 +25,6 @@ def inputPlayerLetter():
         return ['O', 'X']
 
 
-
 def coinFlipForFirst():
     if random.randint(0, 1) == 0:
         return 'computer'
