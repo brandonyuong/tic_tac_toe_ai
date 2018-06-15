@@ -1,15 +1,15 @@
 import random
 from tictactoe_utils import isMoveOpen, makeMove, isWinner
 
-def selectCPU():
-    selection = ''
-    while not (selection =='bit' or selection =='byte'):
-        print('Play vs. Bit or Byte? (Bit = Unbeatable AI; Byte = Machine Learning AI)?')
-        selection = input().lower()
-    if selection == 'bit':
-        return 'bit'
-    else:
-        return 'byte'
+
+"""
+Bit is explicitly programmed to choose its move based on a set of predetermined rules:
+1. If it can make a winning move, it will.
+2. If it can prevent the player from winning, it will.
+3. If the center position is open, it will take it.
+4. If a corner position is open, it will take one.
+5. Finally, if a side position is open, it will take one.
+"""
 
 
 def dupeBoard(board):

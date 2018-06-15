@@ -1,8 +1,8 @@
-from tictactoe_utils import inputPlayerLetter, coinFlipForFirst, printBoard, getPlayerMove, makeMove, \
+from tictactoe_utils import inputPlayerLetter, coinFlipForFirst, selectCPU, printBoard, getPlayerMove, makeMove, \
     isWinner, isBoardFull, restart
 
-from cpu_ai import selectCPU, getBitMove
-from save_states import SaveStates
+from bit_cpu_ai import getBitMove
+from byte_cpu_ai import SaveStates
 
 # Start new game
 print('Welcome to Tic Tac Toe!')

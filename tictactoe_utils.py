@@ -25,6 +25,17 @@ def inputPlayerLetter():
         return ['O', 'X']
 
 
+def selectCPU():
+    selection = ''
+    while not (selection =='bit' or selection =='byte'):
+        print('Play vs. Bit or Byte? (Bit = Unbeatable AI; Byte = Machine Learning AI)?')
+        selection = input().lower()
+    if selection == 'bit':
+        return 'bit'
+    else:
+        return 'byte'
+
+
 def coinFlipForFirst():
     if random.randint(0, 1) == 0:
         return 'computer'
