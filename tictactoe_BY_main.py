@@ -29,7 +29,6 @@ while True:
             key = getPlayerMove(theBoard)
             makeMove(theBoard, playerLetter, key)
             gameSave.addState(turn, key)
-            print(gameSave) # Testing
 
             if isWinner(theBoard, playerLetter):
                 printBoard(theBoard)
@@ -50,7 +49,7 @@ while True:
                 key = getBitMove(theBoard, computerLetter)
                 makeMove(theBoard, computerLetter, key)
                 gameSave.addState(turn, key)
-                print(gameSave) # Testing
+
                 if isWinner(theBoard, computerLetter):
                     printBoard(theBoard)
                     print('The computer has beaten you! You lose.')

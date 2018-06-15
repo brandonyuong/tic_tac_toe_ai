@@ -14,7 +14,9 @@ class SaveStates:
             self.cpu = 'A'
 
     def __repr__(self):
-        return "<Current ANN Board: {}".format(self.currentBoard)
+        return "<Current Turn Image: {}\n" \
+               "Save States: {}".format(self.currentBoard, self.statesBoard)
+
 
     def addState(self, whoseTurn, moveKey):
         if whoseTurn == 'player':
@@ -22,3 +24,7 @@ class SaveStates:
         else:
             agent = self.cpu
         self.currentBoard[moveKey - 1] = agent
+        image = []
+        for i in self.currentBoard:
+            image.append(i)
+        self.statesBoard.append(image)
