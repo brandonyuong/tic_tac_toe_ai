@@ -52,7 +52,7 @@ class SaveStates:
 
 
     def recordState(self, winnerCounter):
-        loserCounter = winnerCounter -1
+        loserCounter = winnerCounter - 1
         alpha = 0.1  # learning rate
 
         # Reward winning state by assigning 1 to its P-value
@@ -62,6 +62,11 @@ class SaveStates:
                 cursor.execute(
                     'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),
                     (self.statesBoard[winnerCounter], 1))
+        else:
+            with CursorFromConnectionFromPool() as cursor:
+                cursor.execute(
+                    'UPDATE {} SET pvalue=%s WHERE savestate=%s'.format(self.table),
+                    (1, self.statesBoard[winnerCounter]))
         afterstate_pvalue = 1
         winnerCounter = winnerCounter - 2
 
@@ -94,6 +99,11 @@ class SaveStates:
                 cursor.execute(
                     'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),
                     (self.statesBoard[loserCounter], 0))
+        else:
+            with CursorFromConnectionFromPool() as cursor:
+                cursor.execute(
+                    'UPDATE {} SET pvalue=%s WHERE savestate=%s'.format(self.table),
+                    (0, self.statesBoard[loserCounter]))
         afterstate_pvalue = 0
         loserCounter = loserCounter - 2
 
