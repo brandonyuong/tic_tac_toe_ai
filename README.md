@@ -79,7 +79,9 @@ Though machine learning is involved, Byte is not told what actions to take, but 
 the goal of winning and avoiding losses.  It does not repeat its mistakes (if the method to record is enabled).
 This can be said to be a simple illustration of reinforcement learning.
 
-After a few training iterations, I started to learn from the AI of how to play Tic Tac Toe better!
+After a few training iterations, I started to learn from the AI of how to play Tic Tac Toe better!  If this algorithm
+were to be ported to another game, such as chess or Go, I would not need to become a world champion to unseat a world
+champion player.
 
 #### How Byte Works
 

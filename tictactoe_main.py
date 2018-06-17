@@ -8,7 +8,7 @@ from database import Database
 # Start new game
 print('Welcome to Tic Tac Toe! Initiating game...')
 # Showing database details in the code is not good practice. Should be stored in a separate config file.
-# However, this is a read-only demo server. ML algorithm will not update. But you can play vs. a sample of Byte
+# In this case, this database is a read-only demo so you can try the current sample of the machine learning AI.
 Database.initialise(dbname='learning', user='guestbyml@bymlserv', password='sinc0320', host='bymlserv.postgres.database.azure.com', port='5432', sslmode='require')
 playerLetter, computerLetter = inputPlayerLetter()
 bitOrByte = selectCPU()
