@@ -15,8 +15,8 @@ class SaveStates:
     def __init__(self, first):
         self.statesBoard = []
         self.currentBoard = [' '] * 9
-        self.table = 'ann_ttt_2'  # Name of PostgreSQL table
-
+        self.table = 'ann_ttt'  # Name of db
+        self.alpha = 0.1  # learning rate
 
         # Track who played first
         if first == 'player':
@@ -53,7 +53,6 @@ class SaveStates:
 
     def recordState(self, winnerCounter):
         loserCounter = winnerCounter - 1
-        alpha = 0.1  # learning rate
 
         # Reward winning state by assigning 1 to its P-value
         retrieveWinState = self.retrieveState(self.statesBoard[winnerCounter])
@@ -75,7 +74,7 @@ class SaveStates:
             retrieved = self.retrieveState(self.statesBoard[winnerCounter])
             if retrieved:
                 recorded_pvalue = retrieved[2]
-                new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
+                new_pvalue = recorded_pvalue + self.alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
                         'UPDATE {} SET pvalue=%s WHERE savestate=%s'.format(self.table),
@@ -84,7 +83,7 @@ class SaveStates:
                 winnerCounter -= 2
             else:
                 recorded_pvalue = 0.5
-                new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
+                new_pvalue = recorded_pvalue + self.alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
                         'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),
@@ -112,7 +111,7 @@ class SaveStates:
             retrieved = self.retrieveState(self.statesBoard[loserCounter])
             if retrieved:
                 recorded_pvalue = retrieved[2]
-                new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
+                new_pvalue = recorded_pvalue + self.alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
                         'UPDATE {} SET pvalue=%s WHERE savestate=%s'.format(self.table),
@@ -121,7 +120,7 @@ class SaveStates:
                 loserCounter -= 2
             else:
                 recorded_pvalue = 0.5
-                new_pvalue = recorded_pvalue + alpha * (afterstate_pvalue - recorded_pvalue)
+                new_pvalue = recorded_pvalue + self.alpha * (afterstate_pvalue - recorded_pvalue)
                 with CursorFromConnectionFromPool() as cursor:
                     cursor.execute(
                         'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'.format(self.table),

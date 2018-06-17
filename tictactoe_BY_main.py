@@ -7,9 +7,7 @@ from database import Database
 
 # Start new game
 print('Welcome to Tic Tac Toe! Initiating game...')
-username = input("PostgreSQL user: ")
-userpw = input("PostgreSQL password: ")
-Database.initialise(user=username, password=userpw, host='localhost', database='learning2')
+Database.initialise(dbname='learning', user='guestbyml@bymlserv', password='sinc0320', host='bymlserv.postgres.database.azure.com', port='5432', sslmode='require')
 playerLetter, computerLetter = inputPlayerLetter()
 bitOrByte = selectCPU()
 
@@ -40,7 +38,6 @@ while True:
             if isWinner(theBoard, playerLetter):
                 printBoard(theBoard)
                 print('Hooray! You have won the game!')
-                gameSave.recordState(numberTurns)
                 gameIsPlaying = False
             else:
                 if isBoardFull(theBoard):
@@ -62,7 +59,6 @@ while True:
                 if isWinner(theBoard, computerLetter):
                     printBoard(theBoard)
                     print('Bit has beaten you! You lose.')
-                    gameSave.recordState(numberTurns)
                     gameIsPlaying = False
                 else:
                     if isBoardFull(theBoard):
@@ -81,7 +77,6 @@ while True:
                 if isWinner(theBoard, computerLetter):
                     printBoard(theBoard)
                     print('Byte has beaten you! You lose.')
-                    gameSave.recordState(numberTurns)
                     gameIsPlaying = False
                 else:
                     if isBoardFull(theBoard):
