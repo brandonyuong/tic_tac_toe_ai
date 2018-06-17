@@ -37,6 +37,7 @@ and 'Byte'.
 + Byte, the machine learning AI, is currently unbeatable as far as I am aware.  If you beat it repeatedly, or
 consistently please let me know what you did!
 + Suggestions to how I can clean the code better is welcome!
++ Please let me know if you know of any bugs.  Thanks!
 
 ## Discussion
 
@@ -69,7 +70,7 @@ chess-playing developer.
 ### Byte: The Self-Learning AI
 
 Byte is a little bit more complex than Bit.  It initially played terribly, picking random moves, but learns how to
-play better every time the game is played. At the start of its turns, Byte retrieves recorded game states for its
+play better every time the game is played.  At the start of its turns, Byte retrieves recorded game states for its
 possible moves and picks the one with the highest P-value (probability of winning).
 
 #### Machine Learning
@@ -77,6 +78,8 @@ possible moves and picks the one with the highest P-value (probability of winnin
 Though machine learning is involved, Byte is not told what actions to take, but instead learns what actions achieves
 the goal of winning and avoiding losses.  It does not repeat its mistakes (if the method to record is enabled).
 This can be said to be a simple illustration of reinforcement learning.
+
+After a few training iterations, I started to learn from the AI of how to play Tic Tac Toe better!
 
 #### How Byte Works
 
