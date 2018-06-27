@@ -4,10 +4,10 @@ from bit_cpu_ai import dupeBoard
 
 
 """
-Byte is based on an artificial neural network (ANN). Byte learns every time the game is played. At the start of its
-turns, Byte retrieves recorded game states for its possible moves and picks the one with the highest P-value
-(probability of winning). Byte records the game state of each turn and adjusts the recorded P-value of each game state
-at the end of a game based on the outcome. Byte is able to learn from players and other computer AI.
+Byte learns every time the game is played. At the start of its turns, Byte retrieves recorded game states for its 
+possible moves and picks the one with the highest P-value (probability of winning). Byte records the game state of each 
+turn and adjusts the recorded P-value of each game state at the end of a game based on the outcome. Byte is able to 
+learn from players and other computer AI.
 """
 
 

@@ -1,7 +1,7 @@
 Tic Tac Toe w/ Machine Learning AI
 ------
-This is a simple Tic Tac Toe game which runs from the command line.  Features a machine learning AI that plays from an
-Artificial Neural Network (ANN).
+This is a simple Tic Tac Toe game which runs from the command line.  Features a machine learning AI that learn moves to
+play via reinforcement Q learning.
 
 ### Requirements
 + Python 3.6.4
@@ -87,7 +87,7 @@ champion player.
 
 Byte records the game state of each turn and adjusts the recorded P-value of each game state at the end of a game based
 on the outcome. Byte is able to learn from players and other computer AI.  For it to become unbeatable, it must be
-"trained" with a large number of games to develop its neural network (i.e. database of game states and P-values).
+"trained" with a large number of games to build up its "memory" (i.e. Q table, or database of game states and P-values).
 
 #### How It Is Efficient
 
