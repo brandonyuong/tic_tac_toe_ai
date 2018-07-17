@@ -12,8 +12,7 @@ AI includes scripted algorithm version and machine learning version.
 """
 
 from tictactoe_game import TicTacToeGame
-from tictactoe_turn import makeMove, getPlayerMove, isWinner, isBoardFull, \
-    coinFlipForFirst
+from tictactoe_turn import PlayerTurn
 from cpu_ai import getBitMove, getByteMove
 from savestates import SaveStates
 from database import Database
@@ -39,32 +38,19 @@ game.setPlayerLetter()
 while True:
 
     game.resetGame()
-    first = coinFlipForFirst()
-    turn = first
-    print('Game begins, ' + turn + ' will go first.')
-    gameSave = SaveStates(first)
+    whoseTurn = PlayerTurn()
+    print('Game begins, ' + whoseTurn.turn + ' will go first.')
+    gameSave = SaveStates(whoseTurn.first)
 
     while game.playing:
-        if turn == 'Player One':
-            # Player’s turn
-            game.printBoard()
-            print(game.playerOneLetter + "'s turn.")
-            key = getPlayerMove(game.board)
-            makeMove(game.board, game.playerOneLetter, key)
-            gameSave.addState(turn, key)
+        if whoseTurn.turn == 'Player One':
+            if game.playerOne == 'human':
+                game.printBoard()
+            whoseTurn.playerOnePlays(game.board,
+                                     game.playerOneLetter, gameSave)
             game.numberTurns += 1
 
-            if isWinner(game.board, game.playerOneLetter):
-                game.printBoard()
-                print('Player One has won the game!')
-                game.playing = False
-            else:
-                if isBoardFull(game.board):
-                    game.printBoard()
-                    print('The game is a tie!')
-                    break
-                else:
-                    turn = 'Player Two'
+            game.isEnding(whoseTurn.turn)
 
         else:
             # Player 2’s turn
@@ -73,7 +59,7 @@ while True:
                 print(game.playerTwoLetter + "'s turn.")
                 key = getPlayerMove(game.board)
                 makeMove(game.board, game.playerTwoLetter, key)
-                gameSave.addState(turn, key)
+                gameSave.addState(whoseTurn.turn, key)
                 game.numberTurns += 1
 
                 if isWinner(game.board, game.playerTwoLetter):
@@ -86,12 +72,12 @@ while True:
                         print('The game is a tie!')
                         break
                     else:
-                        turn = 'Player One'
+                        whoseTurn.turn = 'Player One'
 
             if game.playerTwo == 'bit':
                 key = getBitMove(game.board, game.playerTwoLetter)
                 makeMove(game.board, game.playerTwoLetter, key)
-                gameSave.addState(turn, key)
+                gameSave.addState(whoseTurn.turn, key)
                 game.numberTurns += 1
 
                 if isWinner(game.board, game.playerTwoLetter):
@@ -104,12 +90,12 @@ while True:
                         print('The game is a tie!')
                         break
                     else:
-                        turn = 'Player One'
+                        whoseTurn.turn = 'Player One'
 
             if game.playerTwo == 'byte':
                 key = getByteMove(gameSave)
                 makeMove(game.board, game.playerTwoLetter, key)
-                gameSave.addState(turn, key)
+                gameSave.addState(whoseTurn.turn, key)
                 game.numberTurns += 1
 
                 if isWinner(game.board, game.playerTwoLetter):
@@ -122,7 +108,7 @@ while True:
                         print('The game is a tie!')
                         break
                     else:
-                        turn = 'Player One'
+                        whoseTurn.turn = 'Player One'
 
     # Restart the board or not
     endChoice = game.endMenu()

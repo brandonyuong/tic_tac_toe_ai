@@ -83,3 +83,55 @@ class TicTacToeGame:
             self.selectHumanOrCpu()
             self.setPlayerLetter()
             return 'p'
+
+    def isWinner(self, playerLetter):
+        # Given a player’s letter, check if player has won.
+        return ((self.board[6] == playerLetter and self.board[7] == playerLetter and
+                 self.board[8] == playerLetter) or  # top row
+
+                (self.board[3] == playerLetter and self.board[4] == playerLetter and
+                 self.board[5] == playerLetter) or  # middle row
+
+                (self.board[0] == playerLetter and self.board[1] == playerLetter and
+                 self.board[2] == playerLetter) or  # bottom row
+
+                (self.board[6] == playerLetter and self.board[3] == playerLetter and
+                 self.board[0] == playerLetter) or  # left column
+
+                (self.board[7] == playerLetter and self.board[4] == playerLetter and
+                 self.board[1] == playerLetter) or  # middle column
+
+                (self.board[8] == playerLetter and self.board[5] == playerLetter and
+                 self.board[2] == playerLetter) or  # right column
+
+                (self.board[6] == playerLetter and self.board[4] == playerLetter and
+                 self.board[2] == playerLetter) or  # diagonal
+
+                (self.board[8] == playerLetter and self.board[4] == playerLetter and
+                 self.board[0] == playerLetter))  # other diagonal
+
+    def isBoardFull(self):
+        # Test to see if every space on the board has been taken
+        for k in range(1, 10):
+            if self.isMoveOpen(self.board, k):
+                return False
+        return True
+
+    def isEnding(self, turn):
+        if turn == "Player One":
+            playerLetter = self.playerOneLetter
+        else:
+            playerLetter = self.playerTwoLetter
+        if self.isWinner(playerLetter):
+            self.printBoard()
+            print('Player One has won the game!')
+            self.playing = False
+            return
+        else:
+            if self.isBoardFull():
+                self.printBoard()
+                print('The game is a tie!')
+                self.playing = False
+                return
+            else:
+                return turn

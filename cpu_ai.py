@@ -1,5 +1,5 @@
 import random
-from tictactoe_turn import isMoveOpen, makeMove, isWinner
+from tictactoe_turn import PlayerTurn
 
 
 def dupeBoard(board):
@@ -11,13 +11,13 @@ def dupeBoard(board):
     return duplicateBoard
 
 
-def chooseRandomMoveFromList(board, indexList):
+def chooseRandomMoveFromList(board, indexList, playerTurn):
     # Returns a valid move from the passed list on the passed board.
     # Returns None if there is no valid move.
 
     possibleKeys = []
     for i in indexList:
-        if isMoveOpen(board, i + 1):
+        if playerTurn.isMoveOpen(board, i + 1):
             possibleKeys.append(i + 1)
 
     if len(possibleKeys) != 0:
@@ -26,7 +26,7 @@ def chooseRandomMoveFromList(board, indexList):
         return None
 
 
-def getBitMove(board, computerLetter):
+def getBitMove(board, computerLetter, playerTurn):
     # use scripted algorithm to determine the best move and return that move
 
     if computerLetter == 'X':
@@ -37,8 +37,8 @@ def getBitMove(board, computerLetter):
     # First, check if we can win in the next move
     for k in range(1, 10):
         copy = dupeBoard(board)
-        if isMoveOpen(copy, k):
-            makeMove(copy, computerLetter, k)
+        if playerTurn.isMoveOpen(copy, k):
+            playerTurn.makeMove(copy, computerLetter, k)
             if isWinner(copy, computerLetter):
                 return k
 
