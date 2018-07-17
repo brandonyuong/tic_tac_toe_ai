@@ -3,7 +3,7 @@ import random
 
 class PlayerTurn:
 
-    # class deals with the evaluation of a player turn
+    # class helps determine player turn
     def __init__(self):
         self.first = ""
         self.turn = ""

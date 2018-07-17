@@ -3,22 +3,17 @@ from game_utils import isWinner, isBoardFull, makeMove, getBitMove, \
 
 class TicTacToeGame:
 
-    # class deals with board and macro aspects of the game
+    # class deals with game board and macro aspects of the game
     def __init__(self):
         self.board = [' '] * 9
         self.playing = True
-        self.playerOneLetter = ''
-        self.playerTwoLetter = ''
         self.numberTurns = -1
-        self.playerOne = ''
-        self.playerTwo = ''
 
     def resetGame(self):
         self.board = [' '] * 9
         self.playing = True
 
     def printBoard(self):
-        # 'board' is a string list that represents the board
         print('\n -----------')
         for i in range(0, 3):
             row = "| "
@@ -27,68 +22,28 @@ class TicTacToeGame:
             print(row)
             print(' -----------')
 
-    def setPlayerLetter(self):
-        letter = ''
-        while not (letter == 'X' or letter == 'O'):
-            print('Player One, do you want to be X or O?')
-            letter = input().upper()
-
-        if letter == 'X':
-            self.playerOneLetter = 'X'
-            self.playerTwoLetter = 'O'
-        else:
-            self.playerOneLetter = 'O'
-            self.playerTwoLetter = 'X'
-
-    @staticmethod
-    def setHumanOrCpu():
-        selection = ''
-        while not (selection == 'human' or selection == 'bit' or
-                   selection == 'byte'):
-            print(
-                'Play vs. human, Bit, or Byte? (Bit = Scripted AI; '
-                'Byte = Machine Learning AI (unbeatable)?')
-            selection = input().lower()
-        if selection == 'human':
-            return 'human'
-        elif selection == 'bit':
-            return 'bit'
-        else:
-            return 'byte'
-
-    def playTurn(self, playerTurn, saveState):
-        # input game and save states. Process turn and record
-        if playerTurn == "Player One":
-            playerLetter = self.playerOneLetter
-            controllerType = self.playerOne
-        else:
-            playerLetter = self.playerTwoLetter
-            controllerType = self.playerTwo
-
+    def playTurn(self, player, playerTurn, saveState):
+        # input player, turn, and savestate objects. Process turn and record
         self.printBoard()
-        print(playerTurn + "'s turn.")
+        print(player.letter + " / " + playerTurn.turn + "'s turn.")
 
         # decide key based on what is playing
-        if controllerType == "human":
+        if player.controller == "human":
             key = getPlayerMove(self.board)
-        if controllerType == "bit":
-            key = getBitMove(self.board, playerLetter)
-        if controllerType == "byte":
+        if player.controller == "bit":
+            key = getBitMove(self.board, player.letter)
+        if player.controller == "byte":
             key = getByteMove(saveState)
 
-        makeMove(self.board, playerLetter, key)
-        saveState.addState(playerTurn, key)
+        makeMove(self.board, player.letter, key)
+        saveState.addState(playerTurn.turn, key)
         self.numberTurns += 1
 
-    def isContinuing(self, playerTurn):
-        # input name of the player whose turn it is, see if game ends or not
-        if playerTurn == "Player One":
-            playerLetter = self.playerOneLetter
-        else:
-            playerLetter = self.playerTwoLetter
-        if isWinner(self.board, playerLetter):
+    def isContinuing(self, player):
+        # input player, check if game ends
+        if isWinner(self.board, player.letter):
             self.printBoard()
-            print(playerLetter + ' has won the game!')
+            print(player.letter + ' has won the game!')
             self.playing = False
             return False
         else:
@@ -100,7 +55,8 @@ class TicTacToeGame:
             else:
                 return True
 
-    def endMenu(self):
+    @staticmethod
+    def endMenu():
         letter = ''
         while not (letter == 'p' or letter == 'q' or letter == 'r'):
             print("\n*** Menu ***\n"
@@ -110,9 +66,7 @@ class TicTacToeGame:
             letter = input().lower()
         if letter == 'p':
             return 'p'
-        if letter == 'q':
+        elif letter == 'q':
             return 'q'
-        if letter == 'r':
-            self.playerTwo = self.setHumanOrCpu()
-            self.setPlayerLetter()
-            return 'p'
+        else:
+            return 'r'

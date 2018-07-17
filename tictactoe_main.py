@@ -12,6 +12,7 @@ AI includes scripted algorithm version and machine learning version.
 """
 
 from tictactoe_game import TicTacToeGame
+from tictactoe_player import Player
 from tictactoe_turn import PlayerTurn
 from savestates import SaveStates
 from database import Database
@@ -30,28 +31,52 @@ Database.initialise(dbname='learning', user='guestbyml@bymlserv',
 
 # initial game settings
 game = TicTacToeGame()
-game.playerOne = 'human'
-game.playerTwo = game.setHumanOrCpu()
-game.setPlayerLetter()
+playerOne = Player()
+playerTwo = Player()
 
-# start game loop
+# set human or AI (Bit or Byte)
+playerTwo.setController()
+
+# set player letters
+print("Player One,")
+playerOne.setLetter()
+if playerOne.letter == 'X':
+    playerTwo.setLetter('O')
+else:
+    playerTwo.setLetter('X')
+
 while True:
-
+    # start new game
     game.resetGame()
     whoseTurn = PlayerTurn()
     print('Game begins, ' + whoseTurn.turn + ' will go first.')
     gameSave = SaveStates(whoseTurn.first)
 
+    # players take turns until game ends
     while game.playing:
-        game.playTurn(whoseTurn.turn, gameSave)
-        if not game.isContinuing(whoseTurn.turn):
+        if whoseTurn.turn == "Player One":
+            player = playerOne
+        else:
+            player = playerTwo
+
+        game.playTurn(player, whoseTurn, gameSave)
+        if not game.isContinuing(player):
             break
         else:
             whoseTurn.setTurnOver()
 
-    # Restart the board or not
+    # Restart the game or not
     endChoice = game.endMenu()
     if endChoice == 'p':
         continue
-    if endChoice == 'q':
+    elif endChoice == 'q':
         break
+    else:
+        playerTwo.setController()
+        print("Player One,")
+        playerOne.setLetter()
+        if playerOne.letter == 'X':
+            playerTwo.setLetter('O')
+        else:
+            playerTwo.setLetter('X')
+        continue

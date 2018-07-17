@@ -14,9 +14,10 @@ def isMoveOpen(board, key):
 def getPlayerMove(board):
     # Let the player type in their move.
     key = ' '
+    keyStrList = list(map(str, range(1, 10)))
+
     # make sure key is valid, and associated move is available
-    while key not in '1 2 3 4 5 6 7 8 9'.split() or \
-            not isMoveOpen(board, int(key)):
+    while key not in keyStrList or not isMoveOpen(board, int(key)):
         print('What is your next move? (Use numpad 1-9)')
         key = input()
     return int(key)
@@ -85,9 +86,9 @@ def getBitMove(board, computerLetter):
     # use scripted algorithm to determine the best move and return that move
 
     if computerLetter == 'X':
-        playerLetter = 'O'
+        opponentLetter = 'O'
     else:
-        playerLetter = 'X'
+        opponentLetter = 'X'
 
     # First, check if we can win in the next move
     for k in range(1, 10):
@@ -101,8 +102,8 @@ def getBitMove(board, computerLetter):
     for k in range(1, 10):
         copy = dupeBoard(board)
         if isMoveOpen(copy, k):
-            makeMove(copy, playerLetter, k)
-            if isWinner(copy, playerLetter):
+            makeMove(copy, opponentLetter, k)
+            if isWinner(copy, opponentLetter):
                 return k
 
     # Try to take the center, if it is free.
