@@ -1,6 +1,6 @@
 from database import CursorFromConnectionFromPool
-from tictactoe_utils import isMoveOpen
 from bit_cpu_ai import dupeBoard
+from tictactoe_turn import isMoveOpen
 
 
 """
@@ -19,12 +19,12 @@ class SaveStates:
         self.alpha = 0.1  # learning rate
 
         # Track who played first
-        if first == 'player':
-            self.player = 'A'
-            self.cpu = 'B'
-        elif first == 'computer':
-            self.player = 'B'
-            self.cpu = 'A'
+        if first == 'Player One':
+            self.player1 = 'A'
+            self.player2 = 'B'
+        elif first == 'Player Two':
+            self.player1 = 'B'
+            self.player2 = 'A'
 
     def __repr__(self):
         return "<Current Turn Image: {}\n" \
@@ -32,10 +32,10 @@ class SaveStates:
 
 
     def addState(self, whoseTurn, moveKey):
-        if whoseTurn == 'player':
-            agent = self.player
+        if whoseTurn == 'Player One':
+            agent = self.player1
         else:
-            agent = self.cpu
+            agent = self.player2
         self.currentBoard[moveKey - 1] = agent
         image = dupeBoard(self.currentBoard)
         self.statesBoard.append(image)
@@ -145,7 +145,7 @@ class SaveStates:
         # Find P-value for each possible move from database.  Choose the best move.
         for y in listOpenIndices:
             copy = dupeBoard(self.currentBoard)
-            copy[y] = self.cpu
+            copy[y] = self.player2
             retrieved = self.retrieveState(copy)
             if retrieved:
                 dictAfterstates[str(retrieved[2])] = y + 1

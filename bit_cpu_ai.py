@@ -1,5 +1,5 @@
 import random
-from tictactoe_utils import isMoveOpen, makeMove, isWinner
+from tictactoe_turn import isMoveOpen, makeMove, isWinner
 
 
 """

@@ -1,92 +1,120 @@
-from tictactoe_utils import inputPlayerLetter, coinFlipForFirst, selectCPU, printBoard, getPlayerMove, makeMove, \
-    isWinner, isBoardFull, restart
-
+from tictactoe_game import TicTacToeGame
+from tictactoe_turn import makeMove, getPlayerMove, isWinner, isBoardFull, \
+    coinFlipForFirst
 from bit_cpu_ai import getBitMove
 from byte_cpu_ai import SaveStates
 from database import Database
 
 # Start new game
-print('Welcome to Tic Tac Toe! Initiating game...')
-# Showing database details in the code is not good practice. Should be stored in a separate config file.
-# In this case, this database is a read-only demo so you can try the current sample of the machine learning AI.
-Database.initialise(dbname='learning', user='guestbyml@bymlserv', password='sinc0320', host='bymlserv.postgres.database.azure.com', port='5432', sslmode='require')
-playerLetter, computerLetter = inputPlayerLetter()
-bitOrByte = selectCPU()
+print('Welcome to Tic Tac Toe! Loading game...')
+"""
+This database is a read-only demo so you can try the current sample of the 
+machine learning AI, Byte.  I.e. the AI has already learned, and the learning 
+function is disabled.
+"""
+Database.initialise(dbname='learning', user='guestbyml@bymlserv',
+                    password='sinc0320',
+                    host='bymlserv.postgres.database.azure.com',
+                    port='5432', sslmode='require')
 
+# initial game settings
+game = TicTacToeGame()
+game.selectHumanOrCpu()
+game.setPlayerLetter()
 
 while True:
-# Initiate infinite Restart loop until broken
 
-    theBoard = [' '] * 9
+    game.resetGame()
     first = coinFlipForFirst()
     turn = first
-    print('The ' + turn + ' will go first.')
-    gameIsPlaying = True
+    print('Game begins, ' + turn + ' will go first.')
     gameSave = SaveStates(first)
-    numberTurns = -1
 
-    while gameIsPlaying:
-
-        if turn == 'player':
+    while game.playing:
+        if turn == 'Player One':
             # Player’s turn.
 
-            printBoard(theBoard)
-            key = getPlayerMove(theBoard)
-            makeMove(theBoard, playerLetter, key)
+            game.printBoard()
+            print(game.playerOneLetter + "'s turn.")
+            key = getPlayerMove(game.board)
+            makeMove(game.board, game.playerOneLetter, key)
             gameSave.addState(turn, key)
-            numberTurns += 1
+            game.numberTurns += 1
 
-            if isWinner(theBoard, playerLetter):
-                printBoard(theBoard)
-                print('Hooray! You have won the game!')
-                gameIsPlaying = False
+            if isWinner(game.board, game.playerOneLetter):
+                game.printBoard()
+                print('Player One has won the game!')
+                game.playing = False
             else:
-                if isBoardFull(theBoard):
-                    printBoard(theBoard)
+                if isBoardFull(game.board):
+                    game.printBoard()
                     print('The game is a tie!')
                     break
                 else:
-                    turn = 'computer'
+                    turn = 'Player Two'
 
         else:
-            # Computer’s turn.
+            # Player 2’s turn.
 
-            if bitOrByte == 'bit':
-                key = getBitMove(theBoard, computerLetter)
-                makeMove(theBoard, computerLetter, key)
+            if game.playerTwo == 'human':
+                game.printBoard()
+                print(game.playerTwoLetter + "'s turn.")
+                key = getPlayerMove(game.board)
+                makeMove(game.board, game.playerTwoLetter, key)
                 gameSave.addState(turn, key)
-                numberTurns += 1
+                game.numberTurns += 1
 
-                if isWinner(theBoard, computerLetter):
-                    printBoard(theBoard)
+                if isWinner(game.board, game.playerTwoLetter):
+                    game.printBoard()
+                    print('Player Two has won the game!')
+                    game.playing = False
+                else:
+                    if isBoardFull(game.board):
+                        game.printBoard()
+                        print('The game is a tie!')
+                        break
+                    else:
+                        turn = 'Player One'
+
+            if game.playerTwo == 'bit':
+                key = getBitMove(game.board, game.playerTwoLetter)
+                makeMove(game.board, game.playerTwoLetter, key)
+                gameSave.addState(turn, key)
+                game.numberTurns += 1
+
+                if isWinner(game.board, game.playerTwoLetter):
+                    game.printBoard()
                     print('Bit has beaten you! You lose.')
-                    gameIsPlaying = False
+                    game.playing = False
                 else:
-                    if isBoardFull(theBoard):
-                        printBoard(theBoard)
+                    if isBoardFull(game.board):
+                        game.printBoard()
                         print('The game is a tie!')
                         break
                     else:
-                        turn = 'player'
+                        turn = 'Player One'
 
-            if bitOrByte == 'byte':
+            if game.playerTwo == 'byte':
                 key = gameSave.getByteMove()
-                makeMove(theBoard, computerLetter, key)
+                makeMove(game.board, game.playerTwoLetter, key)
                 gameSave.addState(turn, key)
-                numberTurns += 1
+                game.numberTurns += 1
 
-                if isWinner(theBoard, computerLetter):
-                    printBoard(theBoard)
+                if isWinner(game.board, game.playerTwoLetter):
+                    game.printBoard()
                     print('Byte has beaten you! You lose.')
-                    gameIsPlaying = False
+                    game.playing = False
                 else:
-                    if isBoardFull(theBoard):
-                        printBoard(theBoard)
+                    if isBoardFull(game.board):
+                        game.printBoard()
                         print('The game is a tie!')
                         break
                     else:
-                        turn = 'player'
+                        turn = 'Player One'
 
-    if not restart():
-        # Restart the board or not
+    # Restart the board or not
+    endChoice = game.endMenu()
+    if endChoice == 'p':
+        continue
+    if endChoice == 'q':
         break
