@@ -1,5 +1,60 @@
 import random
-from tictactoe_turn import PlayerTurn
+
+
+def makeMove(board, letter, key):
+    # Create move on board
+    board[key - 1] = letter
+
+
+def isMoveOpen(board, key):
+    # Return true if the passed key is free on the passed board.
+    return board[key - 1] == ' '
+
+
+def getPlayerMove(board):
+    # Let the player type in their move.
+    key = ' '
+    # make sure key is valid, and associated move is available
+    while key not in '1 2 3 4 5 6 7 8 9'.split() or \
+            not isMoveOpen(board, int(key)):
+        print('What is your next move? (Use numpad 1-9)')
+        key = input()
+    return int(key)
+
+
+def isWinner(board, playerLetter):
+    # Given a player’s letter, check if player has won.
+    return ((board[6] == playerLetter and board[7] == playerLetter and
+             board[8] == playerLetter) or  # top row
+
+            (board[3] == playerLetter and board[4] == playerLetter and
+             board[5] == playerLetter) or  # middle row
+
+            (board[0] == playerLetter and board[1] == playerLetter and
+             board[2] == playerLetter) or  # bottom row
+
+            (board[6] == playerLetter and board[3] == playerLetter and
+             board[0] == playerLetter) or  # left column
+
+            (board[7] == playerLetter and board[4] == playerLetter and
+             board[1] == playerLetter) or  # middle column
+
+            (board[8] == playerLetter and board[5] == playerLetter and
+             board[2] == playerLetter) or  # right column
+
+            (board[6] == playerLetter and board[4] == playerLetter and
+             board[2] == playerLetter) or  # diagonal
+
+            (board[8] == playerLetter and board[4] == playerLetter and
+             board[0] == playerLetter))  # other diagonal
+
+
+def isBoardFull(board):
+    # Test to see if every space on the board has been taken
+    for k in range(1, 10):
+        if isMoveOpen(board, k):
+            return False
+    return True
 
 
 def dupeBoard(board):
@@ -11,13 +66,13 @@ def dupeBoard(board):
     return duplicateBoard
 
 
-def chooseRandomMoveFromList(board, indexList, playerTurn):
+def chooseRandomMoveFromList(board, indexList):
     # Returns a valid move from the passed list on the passed board.
     # Returns None if there is no valid move.
 
     possibleKeys = []
     for i in indexList:
-        if playerTurn.isMoveOpen(board, i + 1):
+        if isMoveOpen(board, i + 1):
             possibleKeys.append(i + 1)
 
     if len(possibleKeys) != 0:
@@ -26,7 +81,7 @@ def chooseRandomMoveFromList(board, indexList, playerTurn):
         return None
 
 
-def getBitMove(board, computerLetter, playerTurn):
+def getBitMove(board, computerLetter):
     # use scripted algorithm to determine the best move and return that move
 
     if computerLetter == 'X':
@@ -37,8 +92,8 @@ def getBitMove(board, computerLetter, playerTurn):
     # First, check if we can win in the next move
     for k in range(1, 10):
         copy = dupeBoard(board)
-        if playerTurn.isMoveOpen(copy, k):
-            playerTurn.makeMove(copy, computerLetter, k)
+        if isMoveOpen(copy, k):
+            makeMove(copy, computerLetter, k)
             if isWinner(copy, computerLetter):
                 return k
 
@@ -64,7 +119,7 @@ def getBitMove(board, computerLetter, playerTurn):
 
 
 def getByteMove(saveState):
-    # using class SaveStates, determine the best move from stored memory
+    # input SaveStates object, determine the best move (key) from stored memory
 
     listOpenIndices = []
     for x in range(0, 9):
@@ -85,7 +140,7 @@ def getByteMove(saveState):
         copy[y] = saveState.player2
         retrieved = saveState.retrieveState(copy)
 
-        # store p-value as dict-key; move index as dict-value
+        # store p-value as dict-key; move (key) as dict-value
         if retrieved:
             # retrieved[2] is the retrieved p-value
             dictAfterstates[str(retrieved[2])] = y + 1
@@ -101,5 +156,22 @@ def getByteMove(saveState):
         print('Best P-value = {}, Best move: {}, P-values: Moves = {}'
         .format(best, dictAfterstates[str(best)], dictAfterstates))
     """
+    # return key, not index
     return dictAfterstates[str(best)]
 
+
+def setTrainCount():
+    print("How many games to train? Enter 1 or more: ")
+    counter = input()
+    while True:
+        try:
+            counter = int(counter)
+            if counter > 0:
+                break
+            else:
+                raise ValueError
+        except ValueError:
+            print("Entered: {}. Must enter positive integer!".format(
+                counter))
+            counter = input()
+    return counter

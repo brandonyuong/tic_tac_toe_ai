@@ -13,7 +13,6 @@ AI includes scripted algorithm version and machine learning version.
 
 from tictactoe_game import TicTacToeGame
 from tictactoe_turn import PlayerTurn
-from cpu_ai import getBitMove, getByteMove
 from savestates import SaveStates
 from database import Database
 
@@ -31,7 +30,8 @@ Database.initialise(dbname='learning', user='guestbyml@bymlserv',
 
 # initial game settings
 game = TicTacToeGame()
-game.selectHumanOrCpu()
+game.playerOne = 'human'
+game.playerTwo = game.setHumanOrCpu()
 game.setPlayerLetter()
 
 # start game loop
@@ -43,72 +43,11 @@ while True:
     gameSave = SaveStates(whoseTurn.first)
 
     while game.playing:
-        if whoseTurn.turn == 'Player One':
-            if game.playerOne == 'human':
-                game.printBoard()
-            whoseTurn.playerOnePlays(game.board,
-                                     game.playerOneLetter, gameSave)
-            game.numberTurns += 1
-
-            game.isEnding(whoseTurn.turn)
-
+        game.playTurn(whoseTurn.turn, gameSave)
+        if not game.isContinuing(whoseTurn.turn):
+            break
         else:
-            # Player 2’s turn
-            if game.playerTwo == 'human':
-                game.printBoard()
-                print(game.playerTwoLetter + "'s turn.")
-                key = getPlayerMove(game.board)
-                makeMove(game.board, game.playerTwoLetter, key)
-                gameSave.addState(whoseTurn.turn, key)
-                game.numberTurns += 1
-
-                if isWinner(game.board, game.playerTwoLetter):
-                    game.printBoard()
-                    print('Player Two has won the game!')
-                    game.playing = False
-                else:
-                    if isBoardFull(game.board):
-                        game.printBoard()
-                        print('The game is a tie!')
-                        break
-                    else:
-                        whoseTurn.turn = 'Player One'
-
-            if game.playerTwo == 'bit':
-                key = getBitMove(game.board, game.playerTwoLetter)
-                makeMove(game.board, game.playerTwoLetter, key)
-                gameSave.addState(whoseTurn.turn, key)
-                game.numberTurns += 1
-
-                if isWinner(game.board, game.playerTwoLetter):
-                    game.printBoard()
-                    print('Bit has beaten you! You lose.')
-                    game.playing = False
-                else:
-                    if isBoardFull(game.board):
-                        game.printBoard()
-                        print('The game is a tie!')
-                        break
-                    else:
-                        whoseTurn.turn = 'Player One'
-
-            if game.playerTwo == 'byte':
-                key = getByteMove(gameSave)
-                makeMove(game.board, game.playerTwoLetter, key)
-                gameSave.addState(whoseTurn.turn, key)
-                game.numberTurns += 1
-
-                if isWinner(game.board, game.playerTwoLetter):
-                    game.printBoard()
-                    print('Byte has beaten you! You lose.')
-                    game.playing = False
-                else:
-                    if isBoardFull(game.board):
-                        game.printBoard()
-                        print('The game is a tie!')
-                        break
-                    else:
-                        whoseTurn.turn = 'Player One'
+            whoseTurn.setTurnOver()
 
     # Restart the board or not
     endChoice = game.endMenu()

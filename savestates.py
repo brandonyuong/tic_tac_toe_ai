@@ -1,5 +1,5 @@
 from database import CursorFromConnectionFromPool
-from cpu_ai import dupeBoard
+from game_utils import dupeBoard
 
 """
 Byte learns every time the game is played. At the start of its turns, Byte retrieves recorded game states for its 

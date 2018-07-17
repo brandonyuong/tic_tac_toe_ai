@@ -1,12 +1,16 @@
+from game_utils import isWinner, isBoardFull, makeMove, getBitMove, \
+    getByteMove, getPlayerMove
+
 class TicTacToeGame:
 
+    # class deals with board and macro aspects of the game
     def __init__(self):
         self.board = [' '] * 9
         self.playing = True
         self.playerOneLetter = ''
         self.playerTwoLetter = ''
         self.numberTurns = -1
-        self.playerOne = 'human'
+        self.playerOne = ''
         self.playerTwo = ''
 
     def resetGame(self):
@@ -36,7 +40,8 @@ class TicTacToeGame:
             self.playerOneLetter = 'O'
             self.playerTwoLetter = 'X'
 
-    def selectHumanOrCpu(self):
+    @staticmethod
+    def setHumanOrCpu():
         selection = ''
         while not (selection == 'human' or selection == 'bit' or
                    selection == 'byte'):
@@ -45,27 +50,55 @@ class TicTacToeGame:
                 'Byte = Machine Learning AI (unbeatable)?')
             selection = input().lower()
         if selection == 'human':
-            self.playerTwo = 'human'
+            return 'human'
         elif selection == 'bit':
-            self.playerTwo = 'bit'
+            return 'bit'
         else:
-            self.playerTwo = 'byte'
+            return 'byte'
 
-    def setTrainCount(self):
-        print("How many games to train? Enter 1 or more: ")
-        counter = input()
-        while True:
-            try:
-                counter = int(counter)
-                if counter > 0:
-                    break
-                else:
-                    raise ValueError
-            except ValueError:
-                print("Entered: {}. Must enter positive integer!".format(
-                    counter))
-                counter = input()
-        return counter
+    def playTurn(self, playerTurn, saveState):
+        # input game and save states. Process turn and record
+        if playerTurn == "Player One":
+            playerLetter = self.playerOneLetter
+            controllerType = self.playerOne
+        else:
+            playerLetter = self.playerTwoLetter
+            controllerType = self.playerTwo
+
+        self.printBoard()
+        print(playerTurn + "'s turn.")
+
+        # decide key based on what is playing
+        if controllerType == "human":
+            key = getPlayerMove(self.board)
+        if controllerType == "bit":
+            key = getBitMove(self.board, playerLetter)
+        if controllerType == "byte":
+            key = getByteMove(saveState)
+
+        makeMove(self.board, playerLetter, key)
+        saveState.addState(playerTurn, key)
+        self.numberTurns += 1
+
+    def isContinuing(self, playerTurn):
+        # input name of the player whose turn it is, see if game ends or not
+        if playerTurn == "Player One":
+            playerLetter = self.playerOneLetter
+        else:
+            playerLetter = self.playerTwoLetter
+        if isWinner(self.board, playerLetter):
+            self.printBoard()
+            print(playerLetter + ' has won the game!')
+            self.playing = False
+            return False
+        else:
+            if isBoardFull(self.board):
+                self.printBoard()
+                print('The game is a tie!')
+                self.playing = False
+                return False
+            else:
+                return True
 
     def endMenu(self):
         letter = ''
@@ -80,58 +113,6 @@ class TicTacToeGame:
         if letter == 'q':
             return 'q'
         if letter == 'r':
-            self.selectHumanOrCpu()
+            self.playerTwo = self.setHumanOrCpu()
             self.setPlayerLetter()
             return 'p'
-
-    def isWinner(self, playerLetter):
-        # Given a player’s letter, check if player has won.
-        return ((self.board[6] == playerLetter and self.board[7] == playerLetter and
-                 self.board[8] == playerLetter) or  # top row
-
-                (self.board[3] == playerLetter and self.board[4] == playerLetter and
-                 self.board[5] == playerLetter) or  # middle row
-
-                (self.board[0] == playerLetter and self.board[1] == playerLetter and
-                 self.board[2] == playerLetter) or  # bottom row
-
-                (self.board[6] == playerLetter and self.board[3] == playerLetter and
-                 self.board[0] == playerLetter) or  # left column
-
-                (self.board[7] == playerLetter and self.board[4] == playerLetter and
-                 self.board[1] == playerLetter) or  # middle column
-
-                (self.board[8] == playerLetter and self.board[5] == playerLetter and
-                 self.board[2] == playerLetter) or  # right column
-
-                (self.board[6] == playerLetter and self.board[4] == playerLetter and
-                 self.board[2] == playerLetter) or  # diagonal
-
-                (self.board[8] == playerLetter and self.board[4] == playerLetter and
-                 self.board[0] == playerLetter))  # other diagonal
-
-    def isBoardFull(self):
-        # Test to see if every space on the board has been taken
-        for k in range(1, 10):
-            if self.isMoveOpen(self.board, k):
-                return False
-        return True
-
-    def isEnding(self, turn):
-        if turn == "Player One":
-            playerLetter = self.playerOneLetter
-        else:
-            playerLetter = self.playerTwoLetter
-        if self.isWinner(playerLetter):
-            self.printBoard()
-            print('Player One has won the game!')
-            self.playing = False
-            return
-        else:
-            if self.isBoardFull():
-                self.printBoard()
-                print('The game is a tie!')
-                self.playing = False
-                return
-            else:
-                return turn
