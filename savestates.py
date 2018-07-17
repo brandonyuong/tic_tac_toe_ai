@@ -1,7 +1,5 @@
 from database import CursorFromConnectionFromPool
-from bit_cpu_ai import dupeBoard
-from tictactoe_turn import isMoveOpen
-
+from cpu_ai import dupeBoard
 
 """
 Byte learns every time the game is played. At the start of its turns, Byte retrieves recorded game states for its 
@@ -9,7 +7,6 @@ possible moves and picks the one with the highest P-value (probability of winnin
 turn and adjusts the recorded P-value of each game state at the end of a game based on the outcome. Byte is able to 
 learn from players and other computer AI.
 """
-
 
 class SaveStates:
     def __init__(self, first):
@@ -127,35 +124,3 @@ class SaveStates:
                         (self.statesBoard[loserCounter], new_pvalue))
                 afterstate_pvalue = new_pvalue
                 loserCounter -= 2
-
-    def getByteMove(self):
-        # Given the current board and the computer's letter, determine where to move and return that move.
-
-        listOpenIndices = []
-        for x in range(0, 9):
-            if isMoveOpen(self.currentBoard, x + 1):
-                listOpenIndices.append(x)
-
-        #Print for Testing# print('Open Spaces: {}'.format(listOpenIndices))
-        #Print for Testing# print('Board image: {}'.format(self.currentBoard))
-
-        best = -1
-        dictAfterstates = {}  # Pairs of P-values and possible moves. Call move with the P-value.
-
-        # Find P-value for each possible move from database.  Choose the best move.
-        for y in listOpenIndices:
-            copy = dupeBoard(self.currentBoard)
-            copy[y] = self.player2
-            retrieved = self.retrieveState(copy)
-            if retrieved:
-                dictAfterstates[str(retrieved[2])] = y + 1
-                if retrieved[2] > best:
-                    best = retrieved[2]
-            else:
-                dictAfterstates['0.5'] = y + 1
-                if best < 0.5:
-                    best = 0.5
-
-        #Print for Testing# print('Best P-value = {}, Best move: {}, P-values: Moves = {}'.format(best, dictAfterstates[str(best)], dictAfterstates))
-
-        return dictAfterstates[str(best)]

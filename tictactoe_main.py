@@ -1,16 +1,29 @@
+# -----------------------------------------------------------------------------
+# Name:        Tic Tac Toe
+# Purpose:     Program plays Tic Tac Toe from console
+#
+# Author:      Brandon Yuong
+# -----------------------------------------------------------------------------
+"""
+A Python Tic Tac Toe game that plays from the console.
+
+User has several options in the game: 2 players, 1 player vs AI.
+AI includes scripted algorithm version and machine learning version.
+"""
+
 from tictactoe_game import TicTacToeGame
 from tictactoe_turn import makeMove, getPlayerMove, isWinner, isBoardFull, \
     coinFlipForFirst
-from bit_cpu_ai import getBitMove
-from byte_cpu_ai import SaveStates
+from cpu_ai import getBitMove, getByteMove
+from savestates import SaveStates
 from database import Database
 
-# Start new game
 print('Welcome to Tic Tac Toe! Loading game...')
+
 """
-This database is a read-only demo so you can try the current sample of the 
-machine learning AI, Byte.  I.e. the AI has already learned, and the learning 
-function is disabled.
+This database is a read-only demo so you can try a sample of the machine 
+learning AI, Byte.
+The AI has already learned, and the learning function is disabled.
 """
 Database.initialise(dbname='learning', user='guestbyml@bymlserv',
                     password='sinc0320',
@@ -22,6 +35,7 @@ game = TicTacToeGame()
 game.selectHumanOrCpu()
 game.setPlayerLetter()
 
+# start game loop
 while True:
 
     game.resetGame()
@@ -32,8 +46,7 @@ while True:
 
     while game.playing:
         if turn == 'Player One':
-            # Player’s turn.
-
+            # Player’s turn
             game.printBoard()
             print(game.playerOneLetter + "'s turn.")
             key = getPlayerMove(game.board)
@@ -54,8 +67,7 @@ while True:
                     turn = 'Player Two'
 
         else:
-            # Player 2’s turn.
-
+            # Player 2’s turn
             if game.playerTwo == 'human':
                 game.printBoard()
                 print(game.playerTwoLetter + "'s turn.")
@@ -95,7 +107,7 @@ while True:
                         turn = 'Player One'
 
             if game.playerTwo == 'byte':
-                key = gameSave.getByteMove()
+                key = getByteMove(gameSave)
                 makeMove(game.board, game.playerTwoLetter, key)
                 gameSave.addState(turn, key)
                 game.numberTurns += 1
