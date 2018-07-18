@@ -1,5 +1,6 @@
-from game_utils import isWinner, isBoardFull, makeMove, getBitMove, \
+from game_utils import isWinner, isMoveOpen, makeMove, getBitMove, \
     getByteMove, getPlayerMove
+
 
 class TicTacToeGame:
 
@@ -47,13 +48,20 @@ class TicTacToeGame:
             self.playing = False
             return False
         else:
-            if isBoardFull(self.board):
+            if self.isBoardFull():
                 self.printBoard()
                 print('The game is a tie!')
                 self.playing = False
                 return False
             else:
                 return True
+
+    def isBoardFull(self):
+        # Test to see if every space on the board has been taken
+        for k in range(1, 10):
+            if isMoveOpen(self.board, k):
+                return False
+        return True
 
     @staticmethod
     def endMenu():

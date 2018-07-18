@@ -26,14 +26,6 @@ def isWinner(board, playerLetter):
         return True
 
 
-def isBoardFull(board):
-    # Test to see if every space on the board has been taken
-    for k in range(1, 10):
-        if isMoveOpen(board, k):
-            return False
-    return True
-
-
 def dupeBoard(board):
     # Make a duplicate of the board list and return the duplicate.
 
