@@ -51,68 +51,46 @@ class SaveStates:
                 return [retrievedData[0], retrievedData[1], retrievedData[2]]
 
     def recordState(self, winnerCounter):
+        # input number of total turns when a win occurs
         loserCounter = winnerCounter - 1
 
-        # Reward winning state by assigning 1 to its P-value
         retrieveWinState = self.retrieveState(self.statesBoard[winnerCounter])
-        if not retrieveWinState:
-            with CursorFromConnectionFromPool() as cursor:
-                cursor.execute(
-                    'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'
-                    .format(self.table), (self.statesBoard[winnerCounter], 1))
-        else:
-            with CursorFromConnectionFromPool() as cursor:
-                cursor.execute(
-                    'UPDATE {} SET pvalue=%s WHERE savestate=%s'
-                    .format(self.table), (1, self.statesBoard[winnerCounter]))
-        afterstate_pvalue = 1
-        winnerCounter = winnerCounter - 2
-
-        # Reward states leading to winning state with small increase to P-value
-        while winnerCounter >= 0:
-            retrieved = self.retrieveState(self.statesBoard[winnerCounter])
-            if retrieved:
-                recorded_pvalue = retrieved[2]
-                new_pvalue = recorded_pvalue + self.alpha * \
-                    (afterstate_pvalue - recorded_pvalue)
-                with CursorFromConnectionFromPool() as cursor:
-                    cursor.execute(
-                        'UPDATE {} SET pvalue=%s WHERE savestate=%s'
-                        .format(self.table),
-                        (new_pvalue, self.statesBoard[winnerCounter]))
-                afterstate_pvalue = new_pvalue
-                winnerCounter -= 2
-            else:
-                recorded_pvalue = 0.5
-                new_pvalue = recorded_pvalue + self.alpha * \
-                    (afterstate_pvalue - recorded_pvalue)
-                with CursorFromConnectionFromPool() as cursor:
-                    cursor.execute(
-                        'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'
-                        .format(self.table),
-                        (self.statesBoard[winnerCounter], new_pvalue))
-                afterstate_pvalue = new_pvalue
-                winnerCounter -= 2
-
-        # Punish losing state by assigning 0 to its P-value
         retrieveLossState = self.retrieveState(self.statesBoard[loserCounter])
-        if not retrieveLossState:
+
+        self.recordHelper(retrieveWinState, 1, winnerCounter)
+        self.recordHelper(retrieveLossState, 0, loserCounter)
+
+    def recordHelper(self, retrievedState, pValue, counter):
+        """
+        Iterates through each save state and records to database
+
+        :param retrievedState: should be a a retrieved save state from database
+        :param pValue: 0 for loser, 1 for winner
+        :param counter:
+            Winner Counter = # of total turns that passed
+            Loser Counter = Winner Counter - 1
+        :return: None
+        """
+
+        if not retrievedState:
             with CursorFromConnectionFromPool() as cursor:
                 cursor.execute(
                     'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'
                     .format(self.table),
-                    (self.statesBoard[loserCounter], 0))
+                    (self.statesBoard[counter], pValue))
         else:
             with CursorFromConnectionFromPool() as cursor:
                 cursor.execute(
                     'UPDATE {} SET pvalue=%s WHERE savestate=%s'
-                    .format(self.table), (0, self.statesBoard[loserCounter]))
-        afterstate_pvalue = 0
-        loserCounter = loserCounter - 2
+                    .format(self.table),
+                    (pValue, self.statesBoard[counter]))
+        afterstate_pvalue = pValue
+        counter = counter - 2
 
+        # Reward states leading to winning state with small increase to P-value
         # Punish states leading to losing state with small decrease to P-value
-        while loserCounter >= 0:
-            retrieved = self.retrieveState(self.statesBoard[loserCounter])
+        while counter >= 0:
+            retrieved = self.retrieveState(self.statesBoard[counter])
             if retrieved:
                 recorded_pvalue = retrieved[2]
                 new_pvalue = recorded_pvalue + self.alpha * \
@@ -121,9 +99,9 @@ class SaveStates:
                     cursor.execute(
                         'UPDATE {} SET pvalue=%s WHERE savestate=%s'
                         .format(self.table),
-                        (new_pvalue, self.statesBoard[loserCounter]))
+                        (new_pvalue, self.statesBoard[counter]))
                 afterstate_pvalue = new_pvalue
-                loserCounter -= 2
+                counter -= 2
             else:
                 recorded_pvalue = 0.5
                 new_pvalue = recorded_pvalue + self.alpha * \
@@ -132,6 +110,6 @@ class SaveStates:
                     cursor.execute(
                         'INSERT INTO {} (savestate, pvalue) VALUES (%s, %s)'
                         .format(self.table),
-                        (self.statesBoard[loserCounter], new_pvalue))
+                        (self.statesBoard[counter], new_pvalue))
                 afterstate_pvalue = new_pvalue
-                loserCounter -= 2
+                counter -= 2
