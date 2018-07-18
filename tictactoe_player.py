@@ -19,7 +19,7 @@ class Player:
 
     def setController(self):
         print('Play vs. human, Bit, or Byte? (Bit = Scripted AI; '
-              'Byte = Machine Learning AI (unbeatable)?')
+              'Byte = Machine Learning AI (unbeatable)')
         selection = input().lower()
 
         if selection == 'bit':
