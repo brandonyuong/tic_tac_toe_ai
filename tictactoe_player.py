@@ -1,13 +1,13 @@
 class Player:
 
-    # class for creating players
-    def __init__(self, controller='human'):
-        self.letter = ''
+    # class for creating players, self.letter must be set before playing
+    def __init__(self, letter=None, controller='human'):
+        self.letter = letter
         self.controller = controller
         self.wins = 0
 
-    def setLetter(self, letter=''):
-        if letter == '':
+    def setLetter(self, letter=None):
+        if not letter:
             while not (letter == 'X' or letter == 'O'):
                 print('Select X or O: ')
                 letter = input().upper()

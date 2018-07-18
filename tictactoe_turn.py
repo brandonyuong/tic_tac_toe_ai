@@ -5,8 +5,8 @@ class PlayerTurn:
 
     # class helps determine player turn
     def __init__(self):
-        self.first = ""
-        self.turn = ""
+        self.first = None
+        self.turn = None
 
         if not self.first:
             self.first = self.coinFlipForFirst()
