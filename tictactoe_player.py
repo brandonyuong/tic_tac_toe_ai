@@ -4,6 +4,7 @@ class Player:
     def __init__(self, controller='human'):
         self.letter = ''
         self.controller = controller
+        self.wins = 0
 
     def setLetter(self, letter=''):
         if letter == '':

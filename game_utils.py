@@ -109,7 +109,7 @@ def getByteMove(saveState):
 
     """Print for testing:
     print('Open Spaces: {}'.format(listOpenIndices))
-    print('Board image: {}'.format(self.currentBoard))
+    print('Board image: {}'.format(saveState.currentBoard))
     """
 
     best = -1  # initialize bookmark for finding best p-value
@@ -139,20 +139,3 @@ def getByteMove(saveState):
     """
     # return key, not index
     return dictAfterstates[str(best)]
-
-
-def setTrainCount():
-    print("How many games to train? Enter 1 or more: ")
-    counter = input()
-    while True:
-        try:
-            counter = int(counter)
-            if counter > 0:
-                break
-            else:
-                raise ValueError
-        except ValueError:
-            print("Entered: {}. Must enter positive integer!".format(
-                counter))
-            counter = input()
-    return counter

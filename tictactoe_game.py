@@ -9,10 +9,13 @@ class TicTacToeGame:
         self.board = [' '] * 9
         self.playing = True
         self.numberTurns = -1
+        self.ties = 0
+        self.totalGames = 0
 
     def resetGame(self):
         self.board = [' '] * 9
         self.playing = True
+        self.numberTurns = -1
 
     def printBoard(self):
         print('\n -----------')
@@ -45,12 +48,16 @@ class TicTacToeGame:
         if isWinner(self.board, player.letter):
             self.printBoard()
             print(player.letter + ' has won the game!')
+            player.wins += 1
+            self.totalGames += 1
             self.playing = False
             return False
         else:
             if self.isBoardFull():
                 self.printBoard()
                 print('The game is a tie!')
+                self.ties += 1
+                self.totalGames += 1
                 self.playing = False
                 return False
             else:
@@ -70,7 +77,7 @@ class TicTacToeGame:
             print("\n*** Menu ***\n"
                   "p - Play again\n"
                   "q - Quit game\n"
-                  "r - Reset settings")
+                  "r - Reset settings & counters")
             letter = input().lower()
         if letter == 'p':
             return 'p'

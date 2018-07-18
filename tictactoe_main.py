@@ -65,6 +65,10 @@ while True:
         else:
             whoseTurn.setTurnOver()
 
+    print('[ Total games = {}  |  Player 1 wins = {}  |  Player 2 wins = {}  '
+          '|  Tie games = {} ]'
+          .format(game.totalGames, playerOne.wins, playerTwo.wins, game.ties))
+
     # Restart the game or not
     endChoice = game.endMenu()
     if endChoice == 'p':
@@ -79,4 +83,8 @@ while True:
             playerTwo.setLetter('O')
         else:
             playerTwo.setLetter('X')
+        game.totalGames = 0
+        playerOne.wins = 0
+        playerTwo.wins = 0
+        game.ties = 0
         continue
