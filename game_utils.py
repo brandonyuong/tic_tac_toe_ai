@@ -11,43 +11,19 @@ def isMoveOpen(board, key):
     return board[key - 1] == ' '
 
 
-def getPlayerMove(board):
-    # Let the player type in their move.
-    key = ' '
-    keyStrList = list(map(str, range(1, 10)))
-
-    # make sure key is valid, and associated move is available
-    while key not in keyStrList or not isMoveOpen(board, int(key)):
-        print('What is your next move? (Use numpad 1-9)')
-        key = input()
-    return int(key)
-
-
 def isWinner(board, playerLetter):
     # Given a player’s letter, check if player has won.
-    return ((board[6] == playerLetter and board[7] == playerLetter and
-             board[8] == playerLetter) or  # top row
+    for i in range(0, 3):
+        # check if columns or rows meet win condition
+        if board[i] == board[i + 3] == board[i + 6] == playerLetter or \
+               board[i * 3] == board[i * 3 + 1] == board[i * 3 + 2] == \
+               playerLetter:
+            return True
 
-            (board[3] == playerLetter and board[4] == playerLetter and
-             board[5] == playerLetter) or  # middle row
-
-            (board[0] == playerLetter and board[1] == playerLetter and
-             board[2] == playerLetter) or  # bottom row
-
-            (board[6] == playerLetter and board[3] == playerLetter and
-             board[0] == playerLetter) or  # left column
-
-            (board[7] == playerLetter and board[4] == playerLetter and
-             board[1] == playerLetter) or  # middle column
-
-            (board[8] == playerLetter and board[5] == playerLetter and
-             board[2] == playerLetter) or  # right column
-
-            (board[6] == playerLetter and board[4] == playerLetter and
-             board[2] == playerLetter) or  # diagonal
-
-            (board[8] == playerLetter and board[4] == playerLetter and
-             board[0] == playerLetter))  # other diagonal
+    # check if diagonals meet win condition
+    if board[6] == board[4] == board[2] == playerLetter or \
+            board[8] == board[4] == board[0] == playerLetter:
+        return True
 
 
 def isBoardFull(board):
@@ -80,6 +56,18 @@ def chooseRandomMoveFromList(board, indexList):
         return random.choice(possibleKeys)
     else:
         return None
+
+
+def getPlayerMove(board):
+    # Let the player type in their move.
+    key = ' '
+    keyStrList = list(map(str, range(1, 10)))
+
+    # make sure key is valid, and associated move is available
+    while key not in keyStrList or not isMoveOpen(board, int(key)):
+        print('What is your next move? (Use numpad 1-9)')
+        key = input()
+    return int(key)
 
 
 def getBitMove(board, computerLetter):

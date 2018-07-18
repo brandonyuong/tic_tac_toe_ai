@@ -13,7 +13,8 @@ class PlayerTurn:
         if not self.turn:
             self.turn = self.first
 
-    def coinFlipForFirst(self):
+    @staticmethod
+    def coinFlipForFirst():
         if random.randint(0, 1) == 0:
             return 'Player Two'
         else:

@@ -11,7 +11,6 @@ class Player:
                 print('Select X or O: ')
                 letter = input().upper()
 
-        letter
         if letter == 'X':
             self.letter = 'X'
         else:
