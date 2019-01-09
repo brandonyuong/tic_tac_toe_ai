@@ -1,6 +1,6 @@
-Tic Tac Toe w/ Machine Learning AI
+Tic Tac Toe w/ AI
 ------
-This is a simple Tic Tac Toe game which runs from the command line.  Features a machine learning AI that learn moves to
+This is a simple Tic Tac Toe game which runs from the command line.  Features a self learning AI that learn moves to
 play via reinforcement Q learning.
 
 ### Requirements
@@ -34,7 +34,7 @@ and 'Byte'.
 
 ## Helping
 
-+ Byte, the machine learning AI, is currently unbeatable as far as I am aware.  If you beat it repeatedly, or
++ Byte, the self learning AI, is currently unbeatable as far as I am aware.  If you beat it repeatedly, or
 consistently please let me know what you did!
 + Suggestions to how I can clean the code better is welcome!
 + Please let me know if you know of any bugs.  Thanks!
@@ -73,9 +73,9 @@ Byte is a little bit more complex than Bit.  It initially played terribly, picki
 play better every time the game is played.  At the start of its turns, Byte retrieves recorded game states for its
 possible moves and picks the one with the highest P-value (probability of winning).
 
-#### Machine Learning
+#### Self Learning
 
-Though machine learning is involved, Byte is not told what actions to take, but instead learns what actions achieves
+Byte is not told what actions to take, but instead learns what actions achieves
 the goal of winning and avoiding losses.  It does not repeat its mistakes (if the method to record is enabled).
 This can be said to be a simple illustration of reinforcement learning.
 
